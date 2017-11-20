@@ -64,3 +64,44 @@ BEGIN
     COMMIT;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE update_alunobolsa
+IS
+    CURSOR C IS SELECT ISVOLUNTARIO, VBOLSA FROM ALUNO;
+BEGIN
+    for rec_aluno IN C LOOP
+        UPDATE ALUNO
+          SET isVoluntario = 0, vbolsa = 616.00
+          WHERE rec_aluno.isVoluntario = 1;
+
+    END LOOP;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE relatorio
+IS
+    CURSOR C IS SELECT GERENTE, SMASTER, NOME FROM PROJETO;
+    CURSOR D IS SELECT PROJETO, NOME FROM ALUNO;
+BEGIN
+    FOR rec_projeto IN C LOOP
+        DBMS_OUTPUT.PUT_LINE('Projeto'+ rec_projeto.nome);
+        DBMS_OUTPUT.PUT_LINE('Scrum  master:'+ rec_projeto.smaster);
+        DBMS_OUTPUT.PUT_LINE('Gerente :'+ rec_projeto.gerente);
+        DBMS_OUTPUT.PUT_LINE('Alunos participantes:');
+        FOR rec_aluno IN D LOOP
+            if rec_aluno.projeto = rec_projeto.nome then
+               DBMS_OUTPUT.PUT_LINE(rec_aluno.nome);
+            END IF;
+        END LOOP;
+        COMMIT;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+CREATE OR REPLACE TRIGGER aluno_trigger
+BEFORE INSERT, UPDATE ON Aluno
+AS
+BEGIN
+   IF 
